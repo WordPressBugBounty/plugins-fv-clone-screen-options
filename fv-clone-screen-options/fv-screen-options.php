@@ -3,8 +3,10 @@
 Plugin Name: FV Clone Screen Options 
 Plugin URI: http://foliovision.com/seo-tools/wordpress/plugins/fv-clone-screen-options
 Description: Simple plugin which lets you manage Screen Options of all the users on your blog.
-Version: 0.4
+Version: 0.5
 Author URI: http://foliovision.com
+License: GPL-3.0
+License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Copyright (c) 2019 Foliovision (http://foliovision.com)
 
@@ -74,119 +76,140 @@ function fv_screen_options_page()
   }
 }
 
-add_action('admin_init', 'fv_screen_options_head');
+add_action('load-tools_page_fv_screen_options_manage', 'fv_screen_options_head');
 
 /*
 Here's where the options are cloned
 */
 function fv_screen_options_head() {
-  if(stripos($_SERVER['REQUEST_URI'],'/tools.php?page=fv_screen_options_manage')!==FALSE) {
-    global  $user_ID;
-    
-    /*  All the default widgets from edit-form-advanced.php */
-    /*add_meta_box('submitdiv', __('Publish'), 'post_submit_meta_box', 'post', 'side', 'core'); 
-    //add_meta_box('tagsdiv-' . $tax_name, $label, 'post_tags_meta_box', 'post', 'side', 'core');
-      add_meta_box('tagsdiv-post_tag', 'Post Tags', 'post_tags_meta_box', 'post', 'side', 'core');
-    add_meta_box('categorydiv', __('Categories'), 'post_categories_meta_box', 'post', 'side', 'core');
-    add_meta_box('postexcerpt', __('Excerpt'), 'post_excerpt_meta_box', 'post', 'normal', 'core');
-    add_meta_box('trackbacksdiv', __('Send Trackbacks'), 'post_trackback_meta_box', 'post', 'normal', 'core');
-    add_meta_box('postcustom', __('Custom Fields'), 'post_custom_meta_box', 'post', 'normal', 'core');
-    add_meta_box('commentstatusdiv', __('Discussion'), 'post_comment_status_meta_box', 'post', 'normal', 'core');
-    add_meta_box('commentsdiv', __('Comments'), 'post_comment_meta_box', 'post', 'normal', 'core');
-    add_meta_box('slugdiv', __('Post Slug'), 'post_slug_meta_box', 'post', 'normal', 'core');
-    add_meta_box('authordiv', __('Post Author'), 'post_author_meta_box', 'post', 'normal', 'core');
-    add_meta_box('revisionsdiv', __('Post Revisions'), 'post_revisions_meta_box', 'post', 'normal', 'core');
-    add_meta_box('revisionsdiv', __('Post Revisions'), 'post_revisions_meta_box', 'post', 'normal', 'core');
-    
-    do_action('do_meta_boxes', 'post', 'normal', $post);
-    do_action('do_meta_boxes', 'post', 'advanced', $post);
-    do_action('do_meta_boxes', 'post', 'side', $post);
-    
-    /*  If user clicked Save button  */
-    if(isset($_POST['save_post_screen_options']) || isset($_POST['save_post_screen_options_new_users']) ) {
-      check_ajax_referer( 'screen-options-nonce', 'screenoptionnonce' );
-      $source_user_ID = 10;
-      
-      $source_user_ID = (int) $_POST['source_user'];
-      
-      if(!isset($source_user_ID) || $source_user_ID == '' )
-        return;
-      
-      $fv_screen_options_array = fv_screen_options_get_metanames();
-      $fv_screen_options_tmp = array();
-      
-      foreach( $fv_screen_options_array AS $metakey ) {
-          $fv_screen_options_tmp[$metakey] = get_user_meta($source_user_ID, $metakey, true );
-      }
-      
-      //  clone for users only if clone button was clicked
-      if(isset($_POST['save_post_screen_options'])) {
-        /*  get all the users IDs and save the new settings for each one of them  */
-        foreach( fv_screen_options_get_users() AS $user_object) {
-          foreach( $fv_screen_options_array AS $metakey ) {
-            update_user_meta($user_object->ID, $metakey, $fv_screen_options_tmp[$metakey]);
-          }
-          
-        }
-      }
-    
-      //	store for future use
-      foreach( $fv_screen_options_array AS $metakey ) {
-        if( $fv_screen_options_tmp[$metakey] != '' )
-          update_option('fv_screen_options_'.$metakey, $fv_screen_options_tmp[$metakey]);
-        else
-          delete_option('fv_screen_options_'.$metakey);
-      }
+  global  $user_ID;
+  
+  /*  All the default widgets from edit-form-advanced.php */
+  /*add_meta_box('submitdiv', __('Publish'), 'post_submit_meta_box', 'post', 'side', 'core'); 
+  //add_meta_box('tagsdiv-' . $tax_name, $label, 'post_tags_meta_box', 'post', 'side', 'core');
+    add_meta_box('tagsdiv-post_tag', 'Post Tags', 'post_tags_meta_box', 'post', 'side', 'core');
+  add_meta_box('categorydiv', __('Categories'), 'post_categories_meta_box', 'post', 'side', 'core');
+  add_meta_box('postexcerpt', __('Excerpt'), 'post_excerpt_meta_box', 'post', 'normal', 'core');
+  add_meta_box('trackbacksdiv', __('Send Trackbacks'), 'post_trackback_meta_box', 'post', 'normal', 'core');
+  add_meta_box('postcustom', __('Custom Fields'), 'post_custom_meta_box', 'post', 'normal', 'core');
+  add_meta_box('commentstatusdiv', __('Discussion'), 'post_comment_status_meta_box', 'post', 'normal', 'core');
+  add_meta_box('commentsdiv', __('Comments'), 'post_comment_meta_box', 'post', 'normal', 'core');
+  add_meta_box('slugdiv', __('Post Slug'), 'post_slug_meta_box', 'post', 'normal', 'core');
+  add_meta_box('authordiv', __('Post Author'), 'post_author_meta_box', 'post', 'normal', 'core');
+  add_meta_box('revisionsdiv', __('Post Revisions'), 'post_revisions_meta_box', 'post', 'normal', 'core');
+  add_meta_box('revisionsdiv', __('Post Revisions'), 'post_revisions_meta_box', 'post', 'normal', 'core');
+  
+  do_action('do_meta_boxes', 'post', 'normal', $post);
+  do_action('do_meta_boxes', 'post', 'advanced', $post);
+  do_action('do_meta_boxes', 'post', 'side', $post);
+  
+  /*  If user clicked Save button  */
+  if ( ! empty( $_POST['fv-clone-screen-options-nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['fv-clone-screen-options-nonce'] ) ), 'screen-options-nonce' ) ) {
 
-      header("Location: ".$_SERVER['REQUEST_URI']);
+    $action = isset( $_POST['save_post_screen_options_new_users'] ) ? 'save' : 'clone';
+    
+    $source_user_ID = ! empty( $_POST['source_user'] ) ? intval( $_POST['source_user'] ) : false;
+
+    if ( ! $source_user_ID ) {
+      return;
     }
+
+    $fv_screen_options_array = fv_screen_options_get_metanames();
+    $fv_screen_options_tmp = array();
+    
+    foreach( $fv_screen_options_array AS $metakey ) {
+        $fv_screen_options_tmp[$metakey] = get_user_meta($source_user_ID, $metakey, true );
+    }
+    
+    //  clone for users only if clone button was clicked
+    if ( 'clone' === $action ) {
+      /*  get all the users IDs and save the new settings for each one of them  */
+      foreach( fv_screen_options_get_users() AS $user_object) {
+        foreach( $fv_screen_options_array AS $metakey ) {
+          update_user_meta($user_object->ID, $metakey, $fv_screen_options_tmp[$metakey]);
+        }
+        
+      }
+    }
+  
+    //	store for future use
+    foreach( $fv_screen_options_array AS $metakey ) {
+      if( $fv_screen_options_tmp[$metakey] != '' )
+        update_option('fv_screen_options_'.$metakey, $fv_screen_options_tmp[$metakey]);
+      else
+        delete_option('fv_screen_options_'.$metakey);
+    }
+
+    wp_redirect(
+      add_query_arg(
+        array(
+          'page' => 'fv_screen_options_manage',
+          'message' => $action . '-' . $source_user_ID
+        ),
+        admin_url( 'tools.php' )
+      )
+    );
+    exit;
   }
 }
 
 add_action('admin_menu', 'fv_screen_options_page');
 
-function fv_screen_options_manage()
-{
-  /*  Display */
-?>
+function fv_screen_options_manage() {
+  $user_id = 0;
+  ?>
   <div class="wrap">
     <div id="icon-tools" class="icon32"><br /></div>
       <h2>FV Clone Screen Options</h2>
 
+      <?php if ( ! empty( $_GET['message'] ) ) :
+        $message = sanitize_text_field( wp_unslash( $_GET['message'] ) );
+
+        // $message is save-{user ID} or {clone}-{user ID}
+        if ( 'save' === substr( $message, 0, 4 ) ) {
+          $action = 'saved';
+        } else {
+          $action = 'cloned';
+        }
+
+        $display_name = 'Unknown user';
+
+        $parts = explode( '-', $message );
+        if ( ! empty( $parts[1] ) ) {
+          $user_id = intval( $parts[1] );
+
+          $user = get_userdata( $user_id );
+          if ( $user ) {
+            if ( ! empty( $user->display_name ) ) {
+              $display_name = $user->display_name;
+            } elseif ( ! empty( $user->user_email ) ) {
+              $display_name = $user->user_email;
+            } else {
+              $display_name = 'User ID ' . $user->ID;
+            }
+          }
+        }
+        ?>
+        <div id="message" class="updated fade"><p><?php printf( 'Screen Options %s from %s.', esc_html( $action ), esc_html( $display_name ) ); ?></p></div>
+      <?php endif; ?>
+
     <form id="adv-settings" action="" method="post">
-    <?php _e('Clone settings for every user from') ?>
-  
-  <select name="source_user">
-  
-  <?php
-  foreach( fv_screen_options_get_users() AS $user_object) {
-  ?>
-    <option value="<?php echo $user_object->ID; ?>"><?php echo $user_object->display_name; ?></option>
-  <?php } ?>
-  </select>
+      Clone settings for every user from
 
-    <?php wp_nonce_field( 'screen-options-nonce', 'screenoptionnonce', false ); ?><input type="submit" value="Clone" name="save_post_screen_options" />
-    <?php wp_nonce_field( 'screen-options-nonce', 'screenoptionnonce', false ); ?><input type="submit" value="Save for new users only" name="save_post_screen_options_new_users" />
-    
+      <select name="source_user">
+        <?php foreach( fv_screen_options_get_users() AS $user_object) : ?>
+          <option value="<?php echo intval( $user_object->ID ); ?>" <?php if ( $user_id === $user_object->ID ) echo 'selected'; ?>><?php echo esc_html( $user_object->display_name ); ?></option>
+        <?php endforeach; ?>
+      </select>
+
+      <?php wp_nonce_field( 'screen-options-nonce', 'fv-clone-screen-options-nonce', false ); ?>
+
+      <input class="button button-primary" type="submit" value="Clone" name="save_post_screen_options" />
+
+      <input class="button" type="submit" value="Save for new users only" name="save_post_screen_options_new_users" />
     </form>
-    
-    <?php
-    
-    echo '<!--<h4>Stored configuration</h4>';
-    
-    $fv_screen_options_array = fv_screen_options_get_metanames();
-
-    foreach( $fv_screen_options_array AS $metakey ) {
-      echo '<h5>'.$metakey.'</h5>';
-      var_dump( get_option('fv_screen_options_'.$metakey) );
-    }
-    
-    echo '-->';
-      
-    ?>
-
-</div>
-<?php
+  </div>
+  <?php
 }
 
 /*

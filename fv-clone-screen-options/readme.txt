@@ -2,8 +2,10 @@
 Contributors: FolioVision
 Tags: screen,screen options,editor
 Requires at least: 2.7
-Tested up to: 6.3
+Tested up to: 6.7
 Stable tag: trunk
+License: GPLv3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Simple plugin which lets you manage Screen Options of all the users on your blog.
 
@@ -20,6 +22,12 @@ Note: Multisite is not supported very well, plugin doesn't distinguish between i
 [Free support available on our forums](https://foliovision.com/support/fv-clone-screen-options/)
 
 == Changelog ==
+
+= Version 0.5 - 2024/12/31 =
+
+* Tested up to: WordPress 6.7
+* Making the plugin pass Plugin Check
+* Nicer interface
 
 = Version 0.4 - 2019/06/12 =
 * Fix for WordPress 5.2.1 user registrations
@@ -109,19 +117,3 @@ manually.
 1. FV Clone Screen Options in your Wordpress menu
 2. FV Clone Screen Options screen
 3. Here's how you set your own Screen Options which you are able to clone to other users
-
-== Testing ==
-
-1. Go to classic editor
-
-1.2. Change visibility of some metaboxes
-
-1.3. Go to Tools -> FV Clone Screen Options
-
-1.4. Click on "Clone"
-
-1.5. Go to another user and check if the metaboxes are hidden
-
-1.6. Create new user
-
-1.7. Check if the metaboxes are hidden
